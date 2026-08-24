@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useParams, useLocation, Link, Navigate } from "react-router-dom";
 import {
   MapPin, UtensilsCrossed, Gem, CalendarClock, ShieldCheck, Landmark, ThermometerSun,
 } from "lucide-react";
@@ -25,6 +25,7 @@ import { computeRiskAssessment } from "../utils/riskEngine";
 
 export default function City() {
   const { cityName } = useParams();
+  const location = useLocation();
   const city = getCityBySlug(cityName?.toLowerCase());
 
   const [geo, setGeo] = useState(null);
@@ -32,6 +33,35 @@ export default function City() {
   const [weatherError, setWeatherError] = useState(false);
   const [timeInfo, setTimeInfo] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const targetId = params.get("place") || params.get("gem") || params.get("food");
+    const hash = location.hash?.replace("#", "");
+
+    const scrollToElement = (id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("highlight-target");
+        const timer = setTimeout(() => {
+          el.classList.remove("highlight-target");
+        }, 2800);
+        return () => clearTimeout(timer);
+      }
+    };
+
+    if (targetId) {
+      const t = setTimeout(() => scrollToElement(targetId), 300);
+      return () => clearTimeout(t);
+    } else if (hash) {
+      const t = setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+      return () => clearTimeout(t);
+    }
+  }, [location.search, location.hash, cityName]);
 
   useEffect(() => {
     if (!city) return;
@@ -211,7 +241,7 @@ export default function City() {
         </section>
 
         {/* Safety Intelligence */}
-        <section className="section-block">
+        <section className="section-block" id="safety">
           <div className="section-heading">
             <h2>Current Destination Intelligence</h2>
             <p>Why this destination is currently assessed the way it is — fully explainable.</p>
@@ -222,7 +252,7 @@ export default function City() {
         </section>
 
         {/* Popular Places */}
-        <section className="section-block">
+        <section className="section-block" id="places">
           <div className="section-heading">
             <h2>Popular Places</h2>
             <p>Well-known attractions worth prioritising in {city.name}.</p>
@@ -235,14 +265,14 @@ export default function City() {
         </section>
 
         {/* Hidden Gems */}
-        <section className="section-block">
+        <section className="section-block" id="hidden-gems">
           <div className="section-heading">
             <h2><Gem size={20} /> Hidden Gems</h2>
             <p>Lesser-known spots recommended by local contributors.</p>
           </div>
           <div className="card-grid card-grid-2">
             {city.hiddenGems.map((gem) => (
-              <article className="hidden-gem-card" key={gem.id}>
+              <article className="hidden-gem-card" key={gem.id} id={gem.id}>
                 <img src={gem.image} alt={gem.name} loading="lazy" />
                 <div>
                   <span className="hidden-gem-tag">{gem.tag}</span>
@@ -256,7 +286,7 @@ export default function City() {
         </section>
 
         {/* Local Food */}
-        <section className="section-block">
+        <section className="section-block" id="food">
           <div className="section-heading">
             <h2>Local Food</h2>
             <p>Authentic dishes and where locals actually go for them.</p>
@@ -269,7 +299,7 @@ export default function City() {
         </section>
 
         {/* Events & Updates */}
-        <section className="section-block">
+        <section className="section-block" id="events">
           <div className="section-heading">
             <h2>Events &amp; Current Updates</h2>
             <p>Demo data unless connected to a live events API.</p>
@@ -282,7 +312,7 @@ export default function City() {
         </section>
 
         {/* Local Intelligence */}
-        <section className="section-block">
+        <section className="section-block" id="intelligence">
           <div className="section-heading">
             <h2>Local Intelligence</h2>
             <p>Structured, verifiable local reports — not a social feed.</p>
@@ -295,7 +325,7 @@ export default function City() {
         </section>
 
         {/* Map */}
-        <section className="section-block">
+        <section className="section-block" id="map">
           <div className="section-heading">
             <h2>Destination Map</h2>
             <p>Attractions, safety alerts, events and local reports plotted together.</p>

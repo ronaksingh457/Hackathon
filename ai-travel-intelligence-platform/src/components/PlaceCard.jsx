@@ -2,7 +2,7 @@ import { Star, MapPin, ArrowUpRight } from "lucide-react";
 
 export default function PlaceCard({ place }) {
   return (
-    <article className="place-card">
+    <article className="place-card" id={place.id}>
       <div className="place-card-image-wrap">
         <img src={place.image} alt={place.name} loading="lazy" className="place-card-image" />
         <span className="place-card-category">{place.category}</span>

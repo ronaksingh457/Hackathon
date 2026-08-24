@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useBackgroundVideo } from "./BackgroundVideoContext.jsx";
+import SearchBar from "./SearchBar.jsx";
 
 export default function HeroSection() {
   const { activeIndex, setActiveIndex, VIDEO_DATA } = useBackgroundVideo();
@@ -87,7 +88,7 @@ export default function HeroSection() {
 
       {/* Main Hero Centered Content */}
       <main className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-[1340px] mx-auto pointer-events-auto my-auto">
-        <div className="flex flex-col items-center justify-center max-w-[90vw] min-[810px]:max-w-[75vw] min-[1200px]:max-w-[70vw]">
+        <div className="flex flex-col items-center justify-center max-w-[90vw] min-[810px]:max-w-[75vw] min-[1200px]:max-w-[70vw] w-full">
           {/* Main Hero Headline */}
           <h1
             id="hero-main-headline"
@@ -95,7 +96,7 @@ export default function HeroSection() {
               revealed ? "active" : ""
             }`}
             style={{
-              fontSize: "clamp(44px, 6.8vw, 106px)",
+              fontSize: "clamp(40px, 6.4vw, 100px)",
               lineHeight: 0.95,
               letterSpacing: "-0.04em",
             }}
@@ -107,16 +108,29 @@ export default function HeroSection() {
           {/* Supporting Description */}
           <p
             id="hero-supporting-description"
-            className={`reveal reveal-d1 text-white/85 text-base sm:text-lg leading-6 font-medium text-center mt-6 max-w-[600px] mx-auto ${
+            className={`reveal reveal-d1 text-white/85 text-base sm:text-lg leading-6 font-medium text-center mt-5 max-w-[620px] mx-auto ${
               revealed ? "active" : ""
             }`}
           >
             Discover places, experiences, weather, culture, time, and everything you need before you begin your journey.
           </p>
 
+          {/* Search Option above Explore Destinations */}
+          <div
+            className={`reveal reveal-d2 mt-7 w-full max-w-[620px] mx-auto z-30 ${
+              revealed ? "active" : ""
+            }`}
+          >
+            <SearchBar
+              variant="hero"
+              showPopularPills={true}
+              placeholder="Search any place or destination (e.g. Taj Mahal, Goa, Red Fort...)"
+            />
+          </div>
+
           {/* Primary CTA Button */}
           <div
-            className={`reveal reveal-d2 mt-8 flex items-center justify-center ${
+            className={`reveal reveal-d3 mt-6 flex items-center justify-center ${
               revealed ? "active" : ""
             }`}
           >
