@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useParams, useLocation, Link, Navigate } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import {
   MapPin, UtensilsCrossed, Gem, CalendarClock, ShieldCheck, Landmark, ThermometerSun,
 } from "lucide-react";
@@ -25,7 +25,6 @@ import { computeRiskAssessment } from "../utils/riskEngine";
 
 export default function City() {
   const { cityName } = useParams();
-  const location = useLocation();
   const city = getCityBySlug(cityName?.toLowerCase());
 
   const [geo, setGeo] = useState(null);
@@ -33,35 +32,6 @@ export default function City() {
   const [weatherError, setWeatherError] = useState(false);
   const [timeInfo, setTimeInfo] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const targetId = params.get("place") || params.get("gem") || params.get("food");
-    const hash = location.hash?.replace("#", "");
-
-    const scrollToElement = (id) => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        el.classList.add("highlight-target");
-        const timer = setTimeout(() => {
-          el.classList.remove("highlight-target");
-        }, 2800);
-        return () => clearTimeout(timer);
-      }
-    };
-
-    if (targetId) {
-      const t = setTimeout(() => scrollToElement(targetId), 300);
-      return () => clearTimeout(t);
-    } else if (hash) {
-      const t = setTimeout(() => {
-        const el = document.getElementById(hash);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 300);
-      return () => clearTimeout(t);
-    }
-  }, [location.search, location.hash, cityName]);
 
   useEffect(() => {
     if (!city) return;
@@ -200,143 +170,150 @@ export default function City() {
       )}
 
       <div className="city-content">
-        {/* Overview Cards */}
-        <section className="overview-grid">
-          <div className="overview-card">
-            <ThermometerSun size={18} />
-            <span className="overview-value">{weather ? `${Math.round(weather.current.temperature_2m)}°C` : "—"}</span>
-            <span className="overview-label">{weather ? getWeatherInfo(weather.current.weather_code).label : "Weather"}</span>
-          </div>
-          <div className="overview-card">
-            <CalendarClock size={18} />
-            <span className="overview-value">{timeInfo ? timeInfo.timeString : "—"}</span>
-            <span className="overview-label">Local Time</span>
-          </div>
-          <div className="overview-card">
-            <Landmark size={18} />
-            <span className="overview-value">{city.events.length} updates</span>
-            <span className="overview-label">Local Updates</span>
-          </div>
-          <div className="overview-card">
-            <ShieldCheck size={18} />
-            <span className="overview-value">{city.localInsights.length * 8} reports</span>
-            <span className="overview-label">Local Intelligence</span>
-          </div>
-          <div className="overview-card">
-            <MapPin size={18} />
-            <span className="overview-value">{(city.places.length + city.hiddenGems.length) * 8} places</span>
-            <span className="overview-label">Places</span>
-          </div>
-          <div className="overview-card">
-            <UtensilsCrossed size={18} />
-            <span className="overview-value">{city.events.length} upcoming</span>
-            <span className="overview-label">Events</span>
-          </div>
-        </section>
+        <div className="city-layout-grid">
+          {/* Main Content (Left Column) */}
+          <main className="city-main-content">
+            {/* Overview Cards */}
+            <section className="overview-grid">
+              <div className="overview-card">
+                <ThermometerSun size={18} />
+                <span className="overview-value">{weather ? `${Math.round(weather.current.temperature_2m)}°C` : "—"}</span>
+                <span className="overview-label">{weather ? getWeatherInfo(weather.current.weather_code).label : "Weather"}</span>
+              </div>
+              <div className="overview-card">
+                <CalendarClock size={18} />
+                <span className="overview-value">{timeInfo ? timeInfo.timeString : "—"}</span>
+                <span className="overview-label">Local Time</span>
+              </div>
+              <div className="overview-card">
+                <Landmark size={18} />
+                <span className="overview-value">{city.events.length} updates</span>
+                <span className="overview-label">Local Updates</span>
+              </div>
+              <div className="overview-card">
+                <ShieldCheck size={18} />
+                <span className="overview-value">{city.localInsights.length * 8} reports</span>
+                <span className="overview-label">Local Intelligence</span>
+              </div>
+              <div className="overview-card">
+                <MapPin size={18} />
+                <span className="overview-value">{(city.places.length + city.hiddenGems.length) * 8} places</span>
+                <span className="overview-label">Places</span>
+              </div>
+              <div className="overview-card">
+                <UtensilsCrossed size={18} />
+                <span className="overview-value">{city.events.length} upcoming</span>
+                <span className="overview-label">Events</span>
+              </div>
+            </section>
 
-        {/* Weather + Time */}
-        <section className="two-col-grid">
-          <WeatherCard weather={weather} error={weatherError} />
-          <TimeCard timeInfo={timeInfo} />
-        </section>
+            {/* Weather + Time */}
+            <section className="two-col-grid">
+              <WeatherCard weather={weather} error={weatherError} />
+              <TimeCard timeInfo={timeInfo} />
+            </section>
 
-        {/* Safety Intelligence */}
-        <section className="section-block" id="safety">
-          <div className="section-heading">
-            <h2>Current Destination Intelligence</h2>
-            <p>Why this destination is currently assessed the way it is — fully explainable.</p>
-          </div>
-          {assessment && (
-            <RiskCard assessment={assessment} onOpenDrawer={() => setDrawerOpen(true)} />
-          )}
-        </section>
+            {/* Safety Intelligence */}
+            <section className="section-block">
+              <div className="section-heading">
+                <h2>Current Destination Intelligence</h2>
+                <p>Why this destination is currently assessed the way it is — fully explainable.</p>
+              </div>
+              {assessment && (
+                <RiskCard assessment={assessment} onOpenDrawer={() => setDrawerOpen(true)} />
+              )}
+            </section>
 
-        {/* Popular Places */}
-        <section className="section-block" id="places">
-          <div className="section-heading">
-            <h2>Popular Places</h2>
-            <p>Well-known attractions worth prioritising in {city.name}.</p>
-          </div>
-          <div className="card-grid card-grid-3">
-            {city.places.map((place) => (
-              <PlaceCard key={place.id} place={place} />
-            ))}
-          </div>
-        </section>
+            {/* Popular Places */}
+            <section className="section-block">
+              <div className="section-heading">
+                <h2>Popular Places</h2>
+                <p>Well-known attractions worth prioritising in {city.name}.</p>
+              </div>
+              <div className="card-grid card-grid-3">
+                {city.places.map((place) => (
+                  <PlaceCard key={place.id} place={place} />
+                ))}
+              </div>
+            </section>
 
-        {/* Hidden Gems */}
-        <section className="section-block" id="hidden-gems">
-          <div className="section-heading">
-            <h2><Gem size={20} /> Hidden Gems</h2>
-            <p>Lesser-known spots recommended by local contributors.</p>
-          </div>
-          <div className="card-grid card-grid-2">
-            {city.hiddenGems.map((gem) => (
-              <article className="hidden-gem-card" key={gem.id} id={gem.id}>
-                <img src={gem.image} alt={gem.name} loading="lazy" />
-                <div>
-                  <span className="hidden-gem-tag">{gem.tag}</span>
-                  <h4>{gem.name}</h4>
-                  <p>{gem.description}</p>
-                  <span className="hidden-gem-location"><MapPin size={13} /> {gem.location}</span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+            {/* Hidden Gems */}
+            <section className="section-block">
+              <div className="section-heading">
+                <h2><Gem size={20} /> Hidden Gems</h2>
+                <p>Lesser-known spots recommended by local contributors.</p>
+              </div>
+              <div className="card-grid card-grid-2">
+                {city.hiddenGems.map((gem) => (
+                  <article className="hidden-gem-card" key={gem.id}>
+                    <img src={gem.image} alt={gem.name} loading="lazy" />
+                    <div>
+                      <span className="hidden-gem-tag">{gem.tag}</span>
+                      <h4>{gem.name}</h4>
+                      <p>{gem.description}</p>
+                      <span className="hidden-gem-location"><MapPin size={13} /> {gem.location}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
 
-        {/* Local Food */}
-        <section className="section-block" id="food">
-          <div className="section-heading">
-            <h2>Local Food</h2>
-            <p>Authentic dishes and where locals actually go for them.</p>
-          </div>
-          <div className="card-grid card-grid-3">
-            {city.foods.map((food) => (
-              <FoodCard key={food.id} food={food} />
-            ))}
-          </div>
-        </section>
+            {/* Local Food */}
+            <section className="section-block">
+              <div className="section-heading">
+                <h2>Local Food</h2>
+                <p>Authentic dishes and where locals actually go for them.</p>
+              </div>
+              <div className="card-grid card-grid-3">
+                {city.foods.map((food) => (
+                  <FoodCard key={food.id} food={food} />
+                ))}
+              </div>
+            </section>
 
-        {/* Events & Updates */}
-        <section className="section-block" id="events">
-          <div className="section-heading">
-            <h2>Events &amp; Current Updates</h2>
-            <p>Demo data unless connected to a live events API.</p>
-          </div>
-          <div className="card-grid card-grid-3">
-            {city.events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </section>
+            {/* Events & Updates */}
+            <section className="section-block">
+              <div className="section-heading">
+                <h2>Events &amp; Current Updates</h2>
+                <p>Demo data unless connected to a live events API.</p>
+              </div>
+              <div className="card-grid card-grid-3">
+                {city.events.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            </section>
 
-        {/* Local Intelligence */}
-        <section className="section-block" id="intelligence">
-          <div className="section-heading">
-            <h2>Local Intelligence</h2>
-            <p>Structured, verifiable local reports — not a social feed.</p>
-          </div>
-          <div className="card-grid card-grid-3">
-            {city.localInsights.map((insight) => (
-              <LocalInsightCard key={insight.id} insight={insight} />
-            ))}
-          </div>
-        </section>
+            {/* Local Intelligence */}
+            <section className="section-block">
+              <div className="section-heading">
+                <h2>Local Intelligence</h2>
+                <p>Structured, verifiable local reports — not a social feed.</p>
+              </div>
+              <div className="card-grid card-grid-3">
+                {city.localInsights.map((insight) => (
+                  <LocalInsightCard key={insight.id} insight={insight} />
+                ))}
+              </div>
+            </section>
 
-        {/* Map */}
-        <section className="section-block" id="map">
-          <div className="section-heading">
-            <h2>Destination Map</h2>
-            <p>Attractions, safety alerts, events and local reports plotted together.</p>
-          </div>
-          <IntelligenceMap city={city} markers={mapMarkers} />
-        </section>
+            {/* Map */}
+            <section className="section-block">
+              <div className="section-heading">
+                <h2>Destination Map</h2>
+                <p>Attractions, safety alerts, events and local reports plotted together.</p>
+              </div>
+              <IntelligenceMap city={city} markers={mapMarkers} />
+            </section>
+          </main>
 
-        {/* AI Assistant */}
-        <section className="section-block">
-          {assessment && <AIAssistant city={city} weather={weather} assessment={assessment} />}
-        </section>
+          {/* Persistent Sticky Copilot Sidebar (Right Column) */}
+          <aside className="city-sidebar">
+            <div className="city-sidebar-sticky">
+              {assessment && <AIAssistant city={city} weather={weather} assessment={assessment} />}
+            </div>
+          </aside>
+        </div>
       </div>
 
       {drawerOpen && assessment && (
@@ -349,8 +326,9 @@ export default function City() {
       )}
 
       <footer className="site-footer">
-        <p>TRAVELIQ — Local Intelligence · Built for Smart India Hackathon</p>
+        <p>SAARTHI — Local Intelligence · Built for Smart India Hackathon</p>
       </footer>
     </div>
   );
 }
+

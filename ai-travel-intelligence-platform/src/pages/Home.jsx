@@ -1,10 +1,12 @@
 import DestinationCard from "../components/DestinationCard";
 import HeroSection from "../components/HeroSection";
+import Navbar from "../components/Navbar";
 import { cities, featuredCities, cityTaglines } from "../data/cities";
 
 export default function Home() {
   return (
     <div className="page home-page">
+      <Navbar overlay />
       <HeroSection />
 
       <section className="featured" id="featured">
@@ -33,7 +35,7 @@ export default function Home() {
         <div className="about-inner">
           <h2>Not another map. Not another feed.</h2>
           <p>
-            TRAVELIQ combines live weather, local time, structured places and food data, and an
+            SAARTHI combines live weather, local time, structured places and food data, and an
             explainable safety assessment engine into one destination briefing — so you understand a
             place before you arrive, not after something goes wrong.
           </p>
@@ -55,7 +57,7 @@ export default function Home() {
       </section>
 
       <footer className="site-footer">
-        <p>TRAVELIQ — Local Intelligence · Built for Smart India Hackathon</p>
+        <p>SAARTHI — Local Intelligence · Built for Smart India Hackathon</p>
       </footer>
     </div>
   );

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useBackgroundVideo } from "./BackgroundVideoContext.jsx";
-import SearchBar from "./SearchBar.jsx";
 
 export default function HeroSection() {
   const { activeIndex, setActiveIndex, VIDEO_DATA } = useBackgroundVideo();
@@ -59,36 +58,29 @@ export default function HeroSection() {
     <section
       id="hero"
       ref={heroRef}
-      className="travel-hero relative w-full h-[100dvh] min-h-[640px] overflow-hidden bg-transparent select-none flex flex-col justify-between"
+      className="travel-hero relative w-full h-[100dvh] min-h-[640px] overflow-hidden bg-transparent select-none flex flex-col justify-between pt-[72px]"
       aria-label="Tourism Hero Section"
     >
-      {/* Top Header Bar with Live Clock Badge */}
-      <header className="absolute top-0 left-0 right-0 z-20 w-full pointer-events-auto">
-        <div className="mx-auto max-w-[1340px] flex items-center justify-between py-6 px-[18px] min-[810px]:py-[30px] min-[810px]:px-[18px] min-[1200px]:py-9 min-[1200px]:px-[15px]">
-          <div className="flex items-center gap-2 text-white">
-            <span className="pulse-dot w-[7px] h-[7px] rounded-full bg-white inline-block" />
-            <span className="text-[12px] font-medium uppercase tracking-wider opacity-90">
-              TRAVELIQ INTEL
+      {/* Main Hero Centered Content */}
+      <main className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-[1340px] mx-auto pointer-events-auto my-auto">
+        <div className="flex flex-col items-center justify-center max-w-[90vw] min-[810px]:max-w-[75vw] min-[1200px]:max-w-[70vw]">
+          {/* Live clock badge */}
+          <div
+            className={`reveal flex items-center gap-2 text-white/90 mb-5 ${revealed ? "active" : ""}`}
+          >
+            <span className="pulse-dot w-[7px] h-[7px] rounded-full bg-[var(--primary)] inline-block" />
+            <span className="text-[11px] font-medium uppercase tracking-wider opacity-80">
+              Live Intel
             </span>
-          </div>
-
-          <div className="flex items-center gap-3 text-white">
-            <span className="hidden sm:inline-block text-[11px] font-medium uppercase tracking-wider opacity-70 font-mono">
-              LOCAL TIME
-            </span>
+            <span className="text-white/30">·</span>
             <span
               id="live-local-clock"
-              className="tabular-nums font-mono text-[12px] font-medium tracking-wider px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg"
+              className="tabular-nums font-mono text-[12px] font-medium tracking-wider"
             >
               {liveClock || "00:00:00"}
             </span>
           </div>
-        </div>
-      </header>
 
-      {/* Main Hero Centered Content */}
-      <main className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-[1340px] mx-auto pointer-events-auto my-auto">
-        <div className="flex flex-col items-center justify-center max-w-[90vw] min-[810px]:max-w-[75vw] min-[1200px]:max-w-[70vw] w-full">
           {/* Main Hero Headline */}
           <h1
             id="hero-main-headline"
@@ -96,7 +88,7 @@ export default function HeroSection() {
               revealed ? "active" : ""
             }`}
             style={{
-              fontSize: "clamp(40px, 6.4vw, 100px)",
+              fontSize: "clamp(44px, 6.8vw, 106px)",
               lineHeight: 0.95,
               letterSpacing: "-0.04em",
             }}
@@ -108,29 +100,16 @@ export default function HeroSection() {
           {/* Supporting Description */}
           <p
             id="hero-supporting-description"
-            className={`reveal reveal-d1 text-white/85 text-base sm:text-lg leading-6 font-medium text-center mt-5 max-w-[620px] mx-auto ${
+            className={`reveal reveal-d1 text-white/85 text-base sm:text-lg leading-6 font-medium text-center mt-6 max-w-[600px] mx-auto ${
               revealed ? "active" : ""
             }`}
           >
             Discover places, experiences, weather, culture, time, and everything you need before you begin your journey.
           </p>
 
-          {/* Search Option above Explore Destinations */}
-          <div
-            className={`reveal reveal-d2 mt-7 w-full max-w-[620px] mx-auto z-30 ${
-              revealed ? "active" : ""
-            }`}
-          >
-            <SearchBar
-              variant="hero"
-              showPopularPills={true}
-              placeholder="Search any place or destination (e.g. Taj Mahal, Goa, Red Fort...)"
-            />
-          </div>
-
           {/* Primary CTA Button */}
           <div
-            className={`reveal reveal-d3 mt-6 flex items-center justify-center ${
+            className={`reveal reveal-d2 mt-8 flex items-center justify-center ${
               revealed ? "active" : ""
             }`}
           >

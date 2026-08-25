@@ -2,7 +2,7 @@ import { MapPin, UtensilsCrossed } from "lucide-react";
 
 export default function FoodCard({ food }) {
   return (
-    <article className="food-card" id={food.id}>
+    <article className="food-card">
       <div className="food-card-image-wrap">
         <img src={food.image} alt={food.name} loading="lazy" className="food-card-image" />
         {food.specialty && (
